@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arena Embroidery — Coming Soon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Cinzel:wght@400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after {
       margin: 0;
@@ -16,7 +17,19 @@
       height: 100%;
       overflow: hidden;
       background: #000;
-      font-family: 'Georgia', serif;
+    }
+
+    /* Solid black cover that fades out once video is ready */
+    #video-cover {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 10;
+      transition: opacity 1.2s ease;
+    }
+    #video-cover.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
     /* YouTube fullscreen background */
@@ -31,15 +44,14 @@
       z-index: 0;
     }
 
-    /* Keeps the iframe 16:9 and always covers the viewport */
     #video-bg iframe {
       position: absolute;
       top: 50%;
       left: 50%;
       width: 100vw;
-      height: 56.25vw; /* 16:9 */
+      height: 56.25vw;
       min-height: 100vh;
-      min-width: 177.78vh; /* 16:9 */
+      min-width: 177.78vh;
       transform: translate(-50%, -50%);
       border: none;
     }
@@ -48,11 +60,11 @@
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.4);
       z-index: 1;
     }
 
-    /* Centered content */
+    /* Layout */
     .content {
       position: fixed;
       inset: 0;
@@ -60,46 +72,38 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       text-align: center;
       color: #fff;
-      padding: 2rem;
+      padding: 4rem 2rem;
     }
 
     .logo {
-      font-size: clamp(2.5rem, 8vw, 6rem);
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2rem, 6vw, 5rem);
       font-weight: 400;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-
-    .tagline {
-      font-size: clamp(0.85rem, 2vw, 1.2rem);
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      opacity: 0.75;
-      margin-bottom: 3rem;
     }
 
     .coming-soon {
-      font-size: clamp(0.7rem, 1.5vw, 0.95rem);
-      letter-spacing: 0.6em;
-      text-transform: uppercase;
-      opacity: 0.55;
-      border-top: 1px solid rgba(255,255,255,0.3);
-      border-bottom: 1px solid rgba(255,255,255,0.3);
-      padding: 0.75rem 2rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.4rem, 3.5vw, 2.8rem);
+      letter-spacing: 0.12em;
+      opacity: 0.85;
     }
   </style>
 </head>
 <body>
 
-  <!-- YouTube background video -->
-  <!-- Replace YOUR_VIDEO_ID with the actual YouTube video ID -->
+  <div id="video-cover"></div>
+
   <div id="video-bg">
     <iframe
-      src="https://www.youtube.com/embed/MXQi-324mHY?autoplay=1&mute=1&loop=1&playlist=MXQi-324mHY&controls=0&showinfo=0&rel=0&disablekb=1&iv_load_policy=3&modestbranding=1"
+      id="yt-iframe"
+      src="https://www.youtube.com/embed/MXQi-324mHY?autoplay=1&mute=1&loop=1&playlist=MXQi-324mHY&controls=0&showinfo=0&rel=0&disablekb=1&iv_load_policy=3&modestbranding=1&enablejsapi=1"
       allow="autoplay; encrypted-media"
       allowfullscreen
     ></iframe>
@@ -109,9 +113,36 @@
 
   <div class="content">
     <h1 class="logo">Arena Embroidery</h1>
-    <p class="tagline">arena-embroidery.com</p>
     <p class="coming-soon">Coming Soon</p>
   </div>
+
+  <script>
+    // Fade out the black cover once the iframe reports it's ready
+    const cover = document.getElementById('video-cover');
+    const iframe = document.getElementById('yt-iframe');
+
+    // YouTube IFrame API
+    window.onYouTubeIframeAPIReady = function () {
+      new YT.Player('yt-iframe', {
+        events: {
+          onReady: function () {
+            setTimeout(() => cover.classList.add('hidden'), 300);
+          },
+          onStateChange: function (e) {
+            // PLAYING = 1 — also reveal if API fires playing before onReady
+            if (e.data === 1) cover.classList.add('hidden');
+          }
+        }
+      });
+    };
+
+    // Fallback: reveal after 4s in case API never fires
+    setTimeout(() => cover.classList.add('hidden'), 4000);
+
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  </script>
 
 </body>
 </html>
