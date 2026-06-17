@@ -64,28 +64,17 @@
       to { transform: rotate(360deg); }
     }
 
-    /* YouTube fullscreen background */
+    /* Fullscreen video background */
     #video-bg {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 100vw;
-      height: 100vh;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
+      inset: 0;
       z-index: 0;
     }
 
-    #video-bg iframe {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100vw;
-      height: 56.25vw;
-      min-height: 100vh;
-      min-width: 177.78vh;
-      transform: translate(-50%, -50%);
-      border: none;
+    #video-bg video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     /* Dark overlay so text is readable */
@@ -138,12 +127,9 @@
   </div>
 
   <div id="video-bg">
-    <iframe
-      id="yt-iframe"
-      src="https://www.youtube.com/embed/MXQi-324mHY?autoplay=1&mute=1&loop=1&playlist=MXQi-324mHY&controls=0&showinfo=0&rel=0&disablekb=1&iv_load_policy=3&modestbranding=1&enablejsapi=1"
-      allow="autoplay; encrypted-media"
-      allowfullscreen
-    ></iframe>
+    <video id="bg-video" autoplay muted loop playsinline preload="auto">
+      <source src="bg.mp4" type="video/mp4" />
+    </video>
   </div>
 
   <div class="overlay"></div>
@@ -155,37 +141,14 @@
 
   <script>
     const cover = document.getElementById('video-cover');
-    let revealed = false;
+    const video = document.getElementById('bg-video');
 
-    function reveal() {
-      if (revealed) return;
-      revealed = true;
+    video.addEventListener('playing', function () {
       cover.classList.add('hidden');
-    }
-
-    // YouTube iframes send postMessage events when enablejsapi=1
-    // Wait an extra 1s after PLAYING so YouTube's own UI overlay finishes fading
-    window.addEventListener('message', function (e) {
-      if (e.origin !== 'https://www.youtube.com') return;
-      try {
-        const data = JSON.parse(e.data);
-        const state = data.info === 1           // onStateChange format
-          || (data.info && data.info.playerState === 1); // infoDelivery format
-        if (state) setTimeout(reveal, 1000);
-      } catch (_) {}
     });
 
-    // Fallback in case postMessage never fires
-    setTimeout(reveal, 6000);
-
-    // When returning to the tab, YouTube briefly re-shows its UI on resume.
-    // Cover it and reset revealed so the postMessage PLAYING handler re-triggers reveal.
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden && revealed) {
-        cover.classList.remove('hidden');
-        revealed = false;
-      }
-    });
+    // Fallback in case the event doesn't fire
+    setTimeout(() => cover.classList.add('hidden'), 5000);
   </script>
 
 </body>
