@@ -117,29 +117,29 @@
   </div>
 
   <script>
-    // Fade out the black cover once the iframe reports it's ready
     const cover = document.getElementById('video-cover');
-    const iframe = document.getElementById('yt-iframe');
+    let revealed = false;
 
-    // YouTube IFrame API
-    window.onYouTubeIframeAPIReady = function () {
-      new YT.Player('yt-iframe', {
-        events: {
-          onStateChange: function (e) {
-            if (e.data === YT.PlayerState.PLAYING) {
-              setTimeout(() => cover.classList.add('hidden'), 100);
-            }
-          }
-        }
-      });
-    };
+    function reveal() {
+      if (revealed) return;
+      revealed = true;
+      cover.classList.add('hidden');
+    }
 
-    // Fallback: reveal after 4s in case API never fires
-    setTimeout(() => cover.classList.add('hidden'), 4000);
+    // YouTube iframes send postMessage events when enablejsapi=1
+    // Wait an extra 1s after PLAYING so YouTube's own UI overlay finishes fading
+    window.addEventListener('message', function (e) {
+      if (e.origin !== 'https://www.youtube.com') return;
+      try {
+        const data = JSON.parse(e.data);
+        const state = data.info === 1           // onStateChange format
+          || (data.info && data.info.playerState === 1); // infoDelivery format
+        if (state) setTimeout(reveal, 1000);
+      } catch (_) {}
+    });
 
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(tag);
+    // Fallback in case postMessage never fires
+    setTimeout(reveal, 6000);
   </script>
 
 </body>
