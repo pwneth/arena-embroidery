@@ -25,11 +25,43 @@
       inset: 0;
       background: #000;
       z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: opacity 1.2s ease;
     }
     #video-cover.hidden {
       opacity: 0;
       pointer-events: none;
+    }
+
+    /* Loader */
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .loader-ring {
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-top-color: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+    }
+
+    .loader-text {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     /* YouTube fullscreen background */
@@ -98,7 +130,12 @@
 </head>
 <body>
 
-  <div id="video-cover"></div>
+  <div id="video-cover">
+    <div class="loader">
+      <div class="loader-ring"></div>
+      <span class="loader-text">Loading</span>
+    </div>
+  </div>
 
   <div id="video-bg">
     <iframe
