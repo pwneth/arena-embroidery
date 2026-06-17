@@ -178,11 +178,12 @@
     // Fallback in case postMessage never fires
     setTimeout(reveal, 6000);
 
-    // When returning to the tab, YouTube re-shows its UI briefly — cover it
+    // When returning to the tab, YouTube briefly re-shows its UI on resume.
+    // Cover it and reset revealed so the postMessage PLAYING handler re-triggers reveal.
     document.addEventListener('visibilitychange', function () {
       if (!document.hidden && revealed) {
         cover.classList.remove('hidden');
-        setTimeout(() => cover.classList.add('hidden'), 1500);
+        revealed = false;
       }
     });
   </script>
