@@ -125,12 +125,10 @@
     window.onYouTubeIframeAPIReady = function () {
       new YT.Player('yt-iframe', {
         events: {
-          onReady: function () {
-            setTimeout(() => cover.classList.add('hidden'), 300);
-          },
           onStateChange: function (e) {
-            // PLAYING = 1 — also reveal if API fires playing before onReady
-            if (e.data === 1) cover.classList.add('hidden');
+            if (e.data === YT.PlayerState.PLAYING) {
+              setTimeout(() => cover.classList.add('hidden'), 100);
+            }
           }
         }
       });
