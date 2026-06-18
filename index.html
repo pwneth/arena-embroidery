@@ -108,6 +108,22 @@
       letter-spacing: 0.12em;
       opacity: 0.85;
     }
+
+    @media (max-width: 768px) {
+      .content {
+        justify-content: center;
+        gap: 1.5rem;
+        padding: max(2rem, env(safe-area-inset-top)) 1.5rem max(2rem, env(safe-area-inset-bottom));
+      }
+
+      .logo {
+        font-size: clamp(1.6rem, 9vw, 3rem);
+      }
+
+      .coming-soon {
+        font-size: clamp(1.1rem, 5vw, 1.8rem);
+      }
+    }
   </style>
 </head>
 <body>
