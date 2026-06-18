@@ -116,16 +116,21 @@
         height: 100%;
       }
 
-      .content {
-        justify-content: space-between;
-        padding: max(2rem, env(safe-area-inset-top)) 1.5rem max(2rem, env(safe-area-inset-bottom));
-      }
-
+      /* Black bar height = (100vh - 56.25vw) / 2, center of each bar is half that */
       .logo {
+        position: absolute;
+        top: calc((100vh - 56.25vw) / 4);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
         font-size: clamp(1.6rem, 9vw, 3rem);
       }
 
       .coming-soon {
+        position: absolute;
+        bottom: calc((100vh - 56.25vw) / 4);
+        left: 50%;
+        transform: translate(-50%, 50%);
         font-size: clamp(1.1rem, 5vw, 1.8rem);
       }
     }
