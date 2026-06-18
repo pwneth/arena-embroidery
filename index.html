@@ -166,7 +166,19 @@
       cover.classList.add('hidden');
     });
 
-    // Fallback in case the event doesn't fire
+    function tryPlay() {
+      video.play().catch(() => {});
+    }
+
+    // iOS Safari needs an explicit play() call
+    document.addEventListener('DOMContentLoaded', tryPlay);
+
+    // Re-trigger play when returning to the tab on mobile
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) tryPlay();
+    });
+
+    // Last resort fallback
     setTimeout(() => cover.classList.add('hidden'), 5000);
   </script>
 
